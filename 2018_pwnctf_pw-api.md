@@ -223,7 +223,7 @@ Now there is just one problem: It does not work with the actual apikey in the ch
 
 While a) seems absolutely possible and we actually spent quite a lot of time on debugging, we will skip forward to the part where we contacted the organizers. It is, however, noteworthy that we played around with the input and, upon reversing it, we were able to recover a seed generating `"tOgKSjWoUMgU3pq3CQ"`, but stretching the key to 100 characters using the code above and submitting this to the service did not yield the flag.
 
-Upon realizing that we apparently seemed to be doing the correct thing but after confirming that the key was indeed generated with the same application we have, they added the following hint:
+Upon realizing that we apparently seemed to be doing the correct thing and after confirming that the key was indeed generated with the same application we have, they added the following hint:
 
 ```
 Hint 3: OpenJDK Runtime Environment (build 10.0.2+13-Debian-1), or in Docker terms FROM openjdk
@@ -288,7 +288,7 @@ for(long s : solutions) {
 }
 ```
 
-The generator first moves 80 steps back and then outputs 100 characters including the 20 chars we already have. We also have to reverse the input String.
+The generator first moves 80 steps back and then outputs 100 characters including the 20 chars we already have. We also have to reverse the input String and the output String.
 
 Note that we no longer have 18 known and 82 unknown but now 20 known and 80 unknown characters. That is because the organizers accidentally shipped the actual flag with the fixed application which another team used to get first blood (although there was no bonus for first blood).
 
