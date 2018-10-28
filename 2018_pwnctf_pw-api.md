@@ -106,7 +106,7 @@ public int nextInt(int bound) {
 }
 ```
 
-The `while (bits - val + (bound-1) < 0)` check is used to assure a uniform distribution over all values between 0 and the bound. However, in this case the likelihood for this to happen is `(2^31 % 62) / 2^31` which is extremely unlikely to happen. Later we figured out that this is indeed irrelevant in this case since this special case is never hit, which is why we will omit it in the rest of the writeup. However, this is just an additional random number being generated with the previous one being discarded.
+The `while (bits - val + (bound-1) < 0)` check is used to assure a uniform distribution over all values between 0 and the bound. However, in this case the likelihood for this to happen is `(2^31 % 62) / 2^31` which is extremely unlikely. Later we figured out that this is indeed irrelevant in this case since this special case is never hit, which is why we will omit it in the rest of the writeup. However, this is just an additional random number being generated with the previous one being discarded.
 
 Basically we return the result of `next(31)` modulo 62, so let's look at ```int next(int bits)``` next, again omitting the code which makes this function thread-safe.
 
@@ -140,7 +140,7 @@ The second property b) is what enables the meet-in-the-middle attack. Since we a
 
 The key benefit is that when we are only interested in the 18 least significant bits, we can ignore all more significant bits. Thus, when reversing the seed of the RNG, we no longer have to look at all `2^48` possible states but only at `2^18` which is easily bruteforceable.
 
-Now, how do we recognize the correct seed? We are interested in only the parity of the outputs, so for each character in our known API key (`QC3qp3UgMUoWjSKgOt`), we look whether it is at an even or odd position in the String used to generate it, where the first index is 0 and thus even.
+Now, how do we recognize the correct seed? We are interested in only the parity of the outputs, so for each character in our known API key (`"QC3qp3UgMUoWjSKgOt"`), we look whether it is at an even or odd position in the String used to generate it, where the first index is 0 and thus even.
 
 We can then simply try all `2^18` possible seeds and see which yields the same sequence of even/odd in the 18th bit which is equal to the first output bit. This can be achieved with the following code, where `vals` denotes the indices of the char's of the API key in the String used to generate it.
 ```
@@ -166,7 +166,7 @@ for(long seed = 0; seed < (1L<<18); seed++) {
 ```
 Now we have a list with potential candidates for the 18 least significant bits. Since the seed is 48 bits in length, we have `2^30` possibilities for the remaining 30 bits. This is more than before, but even though bruteforcing now takes a few seconds, this is absolutely feasible.
 
-Now we no longer care only about the least significant bit of the output of `nextInt(int bound)` but instead all of them, so we simply check whether the output modulo % 62 would yield the same character as we have in our known API key.
+Now we no longer care only about the least significant bit of the output of `nextInt(int bound)` but instead all of them, so we simply check whether the output modulo 62 would yield the same character as we have in our known API key.
 ```
 LinkedList<Long> solutions = new LinkedList<Long>();
 
@@ -213,11 +213,11 @@ for(long s : solutions) {
   System.out.println();
 }
 ```
-This solution works perfectly for all test values generated with various random values generated using:
+This solution works perfectly for all test values generated using:
 ```
 RandomStringUtils.random(100, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
 ```
-Now there is just one problem: It does not work with the actual flag.
+Now there is just one problem: It does not work with the actual apikey in the challenge.
 ### The Unsolvable Challenge
 "Does not work" in this case means the solution above found no seed. Now this can either mean two things: a) the theory or implementation is wrong or b) the known API key can not have been generated with the `RandomStringUtils.random(...)` call from above.
 
