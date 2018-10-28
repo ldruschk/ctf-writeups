@@ -47,7 +47,7 @@ Looking into the source code of `RandomStringUtils` we notice that this does not
 
 `System.nanoTime()` refers to the amount of nano seconds which have elapsed since some specific but unspecified point in time. Remembering the attachment from the first stage, which read `3 days later`, this sounds a lot like the correct seed. `3 days` in nano seconds is `3*24*60*60*1E9`, so now we can just xor this with the first `seedUniquifier` (or rather the first 10 just to be sure) and use that as the `Random` instance used by `RandomStringUtils` instead.
 
-This, however, does not yield to the correct result.
+This, however, does not lead to the correct result.
 
 ## Attempt 2: Using the 18 character substring to reverse the RNG seed
 The second idea was to use what we know about the key from the screenshot, namely the first 18 characters, to reconstruct the seed. However, since each random value generated is taken modulo 62 inside the `RandomStringUtils.random()` function it did not seem to be feasible at first. Out of ideas, we abandonded this challenge for now.
@@ -106,7 +106,7 @@ public int nextInt(int bound) {
 }
 ```
 
-The `while (bits - val + (bound-1) < 0)` check is used to assure a uniform distribution over all values between 0 and the bound. However, in this case the likelihood for this to happen is `(2^31 % 62) / 2^32` which is extremely unlikely to happen. Later we figured out that this is indeed irrelevant in this case since this special case is never hit, which is why we will omit it in the rest of the writeup. However, this is just an additional random number being generated with the previous one being discarded.
+The `while (bits - val + (bound-1) < 0)` check is used to assure a uniform distribution over all values between 0 and the bound. However, in this case the likelihood for this to happen is `(2^31 % 62) / 2^31` which is extremely unlikely to happen. Later we figured out that this is indeed irrelevant in this case since this special case is never hit, which is why we will omit it in the rest of the writeup. However, this is just an additional random number being generated with the previous one being discarded.
 
 Basically we return the result of `next(31)` modulo 62, so let's look at ```int next(int bits)``` next, again omitting the code which makes this function thread-safe.
 
@@ -114,6 +114,7 @@ Basically we return the result of `next(31)` modulo 62, so let's look at ```int 
 protected int next(int bits) {
     long oldseed = seed.get();
     long nextseed = (oldseed * multiplier + addend) & mask;
+    seed.set(nextseed);
     return (int)(nextseed >>> (48 - bits));
 }
 ```
