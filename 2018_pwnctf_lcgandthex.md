@@ -20,7 +20,7 @@ Saving secret messages prefixed with "flag{" definitely sounds like something we
 
 When signing up we can provide some info (name, address, country and phone). This shows us a new page with an (auto-incremented) user number and a "random" numerical password that we can use to login as well as a personal password recovery token in the form of a 128x128 black&white bitmap (see below).
 
-![bitmap of the recovery token for user 42]("./2018_pwnctf_lcgandthex_1.bmp")
+![bitmap of the recovery token for user 42](2018_pwnctf_lcgandthex_1.bmp)
 
 The News we can find on the website include:
 ```
@@ -38,7 +38,7 @@ So we know that the flag has been placed by the creator who most likely has the 
 
 Revisiting the registration site we noticed that the password recovery token hat a URL in the format of `http://.../42.bmp` where `42` was our (actual) user id (lucky, right?). Obviously we now also had access to the password recovery token of the first user (see below), but one question remained: How do we use this token?
 
-![bitmap of the recovery token for user 1]("./2018_pwnctf_lcgandthex_42.bmp")
+![bitmap of the recovery token for user 1](2018_pwnctf_lcgandthex_42.bmp)
 
 The site offers no functionality to recover a password by uploading a token, so we assumed that all relevant information is encoded in the bitmap. By creating some more accounts with the same inputs for name etc. we realized that the tokens appeared to be completely randomized each time, with the user number having no immediately visible imapct.
 
