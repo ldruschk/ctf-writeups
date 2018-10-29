@@ -44,7 +44,7 @@ The site offers no functionality to recover a password by uploading a token, so 
 
 We played around a bit with the bitmap and tried interpreting it as ASCII encoded text, but that failed. We then noticed that at least the first four bits in each line were black, so we assumed this could be 128-bit binary numbers in each row with the four most significant bits being zero.
 
-We came up with a quick python script to parse the image and output the 128 numbers.
+We came up with a short python script to parse the image and output the 128 numbers.
 ```
 import math
 import os
@@ -96,4 +96,4 @@ At this point we only have to guess what output of the RNG is the password (Spoi
 
 To recover the password of the first user either download their recovery image and start from the last number or, alternatively, take the initial seed of your user with the known number (e.g. `13285128405728512840572851284044` for user 42) and subtract `41*313373133731337313373133731337` to get the initial seed of the first user. Now you can just calculate 128 steps of the RNG to get the same password.
 
-With the password `6160325624856057770563639672902954513` we could then login as the first to retrieve the flag `flag{https://www.youtube.com/watch?v=NvS351QKFV4#Y0L0SW4G}`.
+With the password `6160325624856057770563639672902954513` we could then login as the first user to retrieve the flag `flag{https://www.youtube.com/watch?v=NvS351QKFV4#Y0L0SW4G}`.
