@@ -18,7 +18,7 @@ nc checker.uni.hctf.fun 31337
 [...]
 ```
 
-The description included a download link for the source of the service, which, judging by the methods signatures, uses Textbook-RSA without any padding and is implemented using the chinese remainder theorem (CRT). The service also has a check which ensures `"594553"` is not part of the hex representation of the message to be signed, so we cannot sign the string directly.
+The description included a download link for the source of the service, which, judging by the methods signatures, uses Textbook-RSA without any padding and is implemented using the chinese remainder theorem (CRT). The service also has a check which ensures `"594553"` is not part of the hex representation of the message to be signed, so we cannot sign the string directly. We also had access to the python script used for the checker, obviously excluding the flag.
 
 Textbook-RSA means the service uses no padding, so for each message `m` the signature `sig(m)` can be calculated as `sig(m) = m^d mod N` where `d` is the private exponent and `N` is the public modulo.
 
@@ -72,7 +72,7 @@ int main(int argc, const char** argv) {
 ## Blinding attack
 Since no padding is used, for three messages `x, y, z` where `x*y == z` it holds that `sig(x) * sig(y) == sig(z)` since `x^d * y^d == (x*y)^d == z^d`. Although we cannot sign the string directly, we can simply find some factors of the string and let the service sign these separately.
 
-However, `fgets` will convert all non-ASCII characters to `0xff`, so the input cannot contain any bytes between `0x80` and `0xfe`. It is possible to find such factors and other teams have done this (there is also a writeups available explaining this approach), but we did not pursue this idea further.
+However, `fgets` will convert all non-ASCII characters to `0xff`, so the input cannot contain any bytes between `0x80` and `0xfe`. It is possible to find such factors and other teams have done this (there is also a writeup available explaining this approach), but we did not pursue this idea further.
 
 ## Buffer Overflow
 The alternative solution, which we came across by accident, is caused by a buffer overflow when reading the string with `fgets`. We tried to get the service to sign `0x0`, but to do this we had to input the `0x00`-byte 33 times, otherwise the service would continue reading input. When we did this, we got the following signature back:
@@ -104,7 +104,7 @@ The final solution code is:
 from math import gcd
 # a is the signature obtained from the service
 a = 0x32bc2267af0d1568cb1fef1ee27b2f6bf6beda7187ca4da1aab93d5b799dd210d055c030119ffc657008084ba7dd45c1cbb6134edb84a3efe977cb3b5993484b090ae53fac40cd13522b2d817d04ccf7ebd6f631aa2de1530b53e47b1c0400b481d13a1b28cc70c745d08ba15b491c8551bc857de56834e728f652f08af0dff744ea4efe7da17fd0bef19ab009195acfd2c32234fb5b3433a7422cc32c0298349fad24fba3dd4925c05047589ba82d873e6abecb2c8495d7899003773c21daf82ff53bcdad5b3bc895e6b2edfbf604f4de6df2f07a4f474cb655e2477de38f6d3209a1b69aaae71f7fb5a904ed6bb92a3b55fc62c45cde9bb5925ae41c92b942
-# N and e are the publicly known modulo and public exponent from the verifier script we had
+# N and e are the publicly known modulo and public exponent from the checker script we had access to
 N = 0x98ac865ef6a31313e50fb37853ce96804cb2d864e2a4d14bf7cca85a444a40b453de7c3ae8416e8976cd1cac7f548a43fe8c2eb3d4cfcd3808cf9458c0c87bf4c037d515d22d1299b72e79fcd4a1d1531789cb3013031fb0e28fdfe73f090027b3b3428cacef6dbf7823d5da8d3158101e0c07e707224d451fcbb3114ab85a925bcb7faf9b317bbbddba81285ab93f0ee5f968b258f4675e9d893ec7f0e8379b67527d78fe920ab201cb3a6459d4f3902754b36e3264db7727c6d32e014593c39991f54c7b034d69b986616a39454c85d9e032afa853a6e12fea06472ed3573707da3df9ca7ce8d2c3b820e745da6e3cc523789f858d98645ea042bb54b463d3
 e = 0x10001
 
