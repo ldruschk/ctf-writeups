@@ -294,5 +294,17 @@ x!y=x++y
 u=reverse.dropWhile(==w)
 g=head.sortOn(0<$).sort.map(foldl(\r->(!r).until(all(\(x,y)->elem w[x,y]).zip r)(w:))"").permutations.map(u.u)
 ```
+
+## Update (2019-06-26)
+As pointed out by @mcpower in [their writeup](https://github.com/mcpower/ctf-writeups/blob/master/2019-gctf-code-golf.md) and in [issue #1](https://github.com/ldruschk/ctf-writeups/issues/1), our solution fails to handle yet another special case, namely e.g. `["a  a","b"]`, which should yield `"a ba"` according to the rules but yields `"ab a"` with our solution.
+
+But they also came up with a better variant of the `!` function, which simply returns `max` of the first two inputs. This works since any printable character will always be greater than `' '`. Similarly, they also managed to shorten our `all(\(x,y)->elem w[x,y]).zip r` even further. This brings the "wrong" and "somewhat right" solutions down to `132` bytes and `168` bytes respectively.
+
+However, while one would expect the "somewhat right" solution to be accepted as well (since even the "wrong" solution was accepted), the only difference being the stripping of leading/trailing spaces which the second rule requires, it actually causes the checker to fail.
+
+@mcpower also tested whether the strings should be trimmed when determining the length and ordering them but not when returning them, but this failed as well.
+
+At this point it's probably best to wait for Google to release the source code of the checker, as has been done for their CTFs in the past, but the second rule seems to be either misleading or there is something wrong with the checker.
+
 ## Acknowledgements
 Thanks to the authors of all the useful replies in this StackExchange thread: https://codegolf.stackexchange.com/questions/19255/tips-for-golfing-in-haskell
