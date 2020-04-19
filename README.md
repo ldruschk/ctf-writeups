@@ -8,3 +8,6 @@ Writeups of some CTF challenges I worked on.
 
 ## 2019 Google CTF
   - [Code Golf (Haskell)](2019_googlectf_code_golf.md)
+
+## 2020 Plaid CTF
+  - [Bonzi Scheme](2020_plaidctf_bonzi_scheme.md)
